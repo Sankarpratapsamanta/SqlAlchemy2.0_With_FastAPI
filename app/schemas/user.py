@@ -19,3 +19,10 @@ class UserResponse(BaseModel):
     age:int
     is_active:bool
     created_at:datetime
+    
+    
+class UserListResponse(BaseModel):
+    total:int
+    page:int
+    page_size:int
+    items:list[UserResponse]
