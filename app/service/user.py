@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 from app.schemas.user import UserCreate,UserUpdate,UserResponse
+from sqlalchemy.orm import joinedload
 
 
 
@@ -19,6 +20,17 @@ async def create_user(db:AsyncSession,user_data:UserCreate):
     await db.commit()
     
     return new_user
+
+async def get_all_users(db:AsyncSession):
+    # res = await db.execute(select(User))
+    
+    # users = res.scalars().all()
+    
+    users = (select(User).options(joinedload(User.posts)))
+    
+    res = await db.scalars(users)
+    
+    return res.unique().all()
 
 async def get_users(db:AsyncSession,search:str | None=None,min_age:int | None = None,max_age:int | None = None,is_active:bool | None = None,sort_by:str = "id",sort_order:str = "asc",page:int=0,page_size:int=10):
     # users = (select(User).order_by(User.id).offset(skip).limit(limit))

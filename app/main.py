@@ -4,12 +4,16 @@ from app.database import engine
 
 from app.routers.user import router as user_router
 
+from app.routers.post import router as post_router
+
 app = FastAPI(
     title="Advanced SqlAlchemy with FastAPI"
 )
 
 
 app.include_router(user_router)
+app.include_router(post_router)
+
 
 @app.get("/")
 async def home():

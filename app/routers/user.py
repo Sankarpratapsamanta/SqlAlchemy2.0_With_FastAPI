@@ -73,3 +73,11 @@ async def delete_user(user_id:int,db:AsyncSession=Depends(get_db)):
     return {
         "message":"User deleted successfully!"
     }
+    
+    
+@router.get("/all/users")
+async def get_all_user(db:AsyncSession=Depends(get_db)):
+    
+    users = await user_service.get_all_users(db)
+    return users
+    
