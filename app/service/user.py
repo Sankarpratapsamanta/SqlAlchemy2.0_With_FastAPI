@@ -2,8 +2,9 @@ from sqlalchemy import select,and_,or_,not_,func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
+from app.models.post import Post
 from app.schemas.user import UserCreate,UserUpdate,UserResponse
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload,selectinload,contains_eager
 
 
 
@@ -26,7 +27,7 @@ async def get_all_users(db:AsyncSession):
     
     # users = res.scalars().all()
     
-    users = (select(User).options(joinedload(User.posts)))
+    users = (select(User).join(User.posts).where(Post.title == "New Post").options(contains_eager(User.posts)))
     
     res = await db.scalars(users)
     
