@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
 from app.models.post import Post
 from app.schemas.user import UserCreate,UserUpdate,UserResponse
-from sqlalchemy.orm import joinedload,selectinload,contains_eager
+from sqlalchemy.orm import joinedload,selectinload,contains_eager,aliased
 
 
 
@@ -27,11 +27,19 @@ async def get_all_users(db:AsyncSession):
     
     # users = res.scalars().all()
     
-    users = (select(User).join(User.posts).where(Post.title == "New Post").options(contains_eager(User.posts)))
+    # roy_post1 = aliased(Post)
+    # roy_post2 = aliased(Post)
+    
+    # users = (select(User).join(User.posts.of_type(roy_post1)).join(User.posts.of_type(roy_post2)).where(roy_post1.title == "Roy Post1",roy_post2.title == "Roy Post2"))
+    
+    users = select(User).where(
+        User.posts.any(Post.title == "Roy Post1"),
+        User.posts.any(Post.title == "Roy Post2")
+    )
     
     res = await db.scalars(users)
     
-    return res.unique().all()
+    return res.all()
 
 async def get_users(db:AsyncSession,search:str | None=None,min_age:int | None = None,max_age:int | None = None,is_active:bool | None = None,sort_by:str = "id",sort_order:str = "asc",page:int=0,page_size:int=10):
     # users = (select(User).order_by(User.id).offset(skip).limit(limit))
